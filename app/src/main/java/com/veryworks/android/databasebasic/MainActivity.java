@@ -59,12 +59,12 @@ public class MainActivity extends AppCompatActivity {
         Log.i("Test Bbs one","queryForId :::::::::: content="+bbs2.getContent());
 
         // 02. 조건 컬럼명 값
-        List<Bbs> bbsList2 = bbsDao.queryForEq("id", 3);
+        List<Bbs> bbsList2 = bbsDao.queryForEq("title", "제목3");
         for(Bbs item : bbsList2){
             Log.i("Bbs Item","queryForEq :::::::::: id=" + item.getId() + ", title=" + item.getTitle());
         }
 
-        // 03. 조건 컬럼 raw query
+        // 03. 조건 컬럼 raw query - %문자열%
         String query = "SELECT * FROM bbs where title like '%2%'";
         GenericRawResults<Bbs> rawResults = bbsDao.queryRaw(query, bbsDao.getRawRowMapper());
 
