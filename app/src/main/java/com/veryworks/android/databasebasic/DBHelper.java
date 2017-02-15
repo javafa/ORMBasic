@@ -8,6 +8,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import com.veryworks.android.databasebasic.domain.Bbs;
+import com.veryworks.android.databasebasic.domain.Memo;
 
 import java.sql.SQLException;
 
@@ -18,7 +19,7 @@ import java.sql.SQLException;
 public class DBHelper extends OrmLiteSqliteOpenHelper {
 
     public static final String DB_NAME = "database.db";
-    public static final int DB_VERSION = 1;
+    public static final int DB_VERSION = 2;
 
     public DBHelper(Context context){
         super(context, DB_NAME, null, DB_VERSION);
@@ -34,6 +35,7 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
         try {
             // Bbs.class 파일에 정의된 테이블을 생성한다
             TableUtils.createTable(connectionSource, Bbs.class);
+            TableUtils.createTable(connectionSource, Memo.class);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -49,17 +51,27 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase database, ConnectionSource connectionSource, int oldVersion, int newVersion) {
         try {
-            // Bbs.class 에 정의된 테이블 삭제
-            TableUtils.dropTable(connectionSource, Bbs.class, false);
-            // 데이터를 보존해야 될 필요성이 있으면 중간처리를 해줘야만 한다
-            // TODO : 임시테이블을 생성한 후 데이터를 먼저 저장하고 onCreate 이후에 데이터를 입력해준다.
-            // onCreate를 호출해서 테이블을 생성해준다
-            onCreate(database, connectionSource);
+            // 기존 데이터베이스 버전이 1일때 설치한 유저는 Memo 테이블만 생성해준다
+            if(oldVersion == 1){
+                TableUtils.createTable(connectionSource, Memo.class);
+            }else{
+                onCreate(database, connectionSource);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+
+
+
+
+
+
+
+
+
+    // 여기는 제외
     // DBHelper 를 싱글턴으로 사용하기 때문에 dao 객체도 열어놓고 사용가능하다
     private Dao<Bbs, Long> bbsDao = null;
     public Dao<Bbs,Long> getBbsDao() throws SQLException {
